@@ -56,7 +56,7 @@ namespace custom
          BST(): root(), numElements(0) {}
          BST(BST <T> & rhs) throw (const char *) :
                root(), numElements(0) {*this = rhs;} //TODO:
-         ~BST() {/*deleteBinaryTree();*/}
+         ~BST() {deleteBTree(root);}
 
          //standard container interfaces
          BST<T> & operator = (const BST<T> & rhs)throw (const char *);
@@ -654,6 +654,7 @@ namespace custom
    template <class T>
    BST <T> & BST <T> :: operator = (const BST <T> & rhs) throw (const char *)
    {
+      clear();
       //Unless its an empty tree, we will need to copy the contents.
       if (rhs.root != NULL)
       {
