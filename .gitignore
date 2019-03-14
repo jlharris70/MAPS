@@ -6,3 +6,5 @@
 /CS235-10/Debug
 /CS235-10.sln
 /Debug/CS235-10.pdb
+*.exe
+*.ilk
