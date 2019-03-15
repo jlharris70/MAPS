@@ -101,7 +101,6 @@ void displayResults(map <std::string, int> & words)
    while (word != "!")
    {
       int i = words[word];
-      //cout << "> " << word << endl;
       std::cout << "\t" << word << " : " << i << std::endl;
       std::cout << "> ";
       std::cin >> word;
