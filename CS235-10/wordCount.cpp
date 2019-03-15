@@ -8,14 +8,14 @@
  *    This program will implement the wordCount() function
  ************************************************************************/
 
-//#include "map.h"       // for MAP
-#include <map>
+#include "map.h"       // for MAP
+//#include <map>
 #include <sstream>         // String Stream
 #include <fstream>         // File
 #include <iostream>        // for CIN and COUT
 #include <fstream>         // for IFSTREAM
 #include "wordCount.h" // for wordCount() prototype
-using namespace std;
+using namespace custom;
 
 bool debug;
 
@@ -23,7 +23,7 @@ bool debug;
  * ReadFile
  * The function which reads the file/puts them into a map
  ***********************************************************************/
-void ReadFile(map <string, int> & words, const string & fileName)
+void ReadFile(map <std::string, int> & words, const std::string & fileName)
 {
 
    std::ifstream fin(fileName);
@@ -38,7 +38,7 @@ void ReadFile(map <string, int> & words, const string & fileName)
    std::string line;
 
    //The Value
-   string c="";
+   std::string c="";
 
    //Getting one line from file at a time
    while (std::getline(fin, line))
@@ -46,15 +46,13 @@ void ReadFile(map <string, int> & words, const string & fileName)
       //Declaring Variable
       std::stringstream ss(line);
 
-      //inserting into variables
-      //ss >> c;
 
-      //looping through string items and inserting them into set
+      //looping through string items and inserting them into map
       for (int i = 0; ss >> c; i++)
       {
          //Debug code
          if (debug == true)
-            cout << "Words  #: " << c << endl;
+            std::cout << "Words  #: " << c << std::endl;
 
          if (c != "")
          {
@@ -77,12 +75,12 @@ void ReadFile(map <string, int> & words, const string & fileName)
  * fileName
  * The function which gets the file name
  ***********************************************************************/
-string getFileName()
+std::string getFileName()
 {
    // get the fileName
-   string fileName;
-   cout << "What is the filename to be counted? ";
-   cin >> fileName;
+   std::string fileName;
+   std::cout << "What is the filename to be counted? ";
+   std::cin >> fileName;
    return fileName;
 }
 
@@ -90,23 +88,23 @@ string getFileName()
  * displays the results
  * The function which reads the word count
  ***********************************************************************/
-void displayResults(map <string, int> & words)
+void displayResults(map <std::string, int> & words)
 {
    // get the word
-   string word;
-   cout << "What word whose frequency is to be found. Type ! when done";
-   //cout << "Enter \"quit\" when done.\n";
+   std::string word;
+   std::cout << "What word whose frequency is to be found. Type ! when done\n";
 
-   cout << "> ";
-   cin >> word;
+   std::cout << "> ";
+   std::cin >> word;
 
+   // loop for different words until done.
    while (word != "!")
    {
       int i = words[word];
       //cout << "> " << word << endl;
-      cout << "        " << word << " : " << i << endl;
-      cout << "> ";
-      cin >> word;
+      std::cout << "\t" << word << " : " << i << std::endl;
+      std::cout << "> ";
+      std::cin >> word;
    }
 }
 
@@ -121,9 +119,9 @@ void wordCount()
    debug = false;
 
    //Create map 
-   map<string,int> words;
+   map<std::string,int> words;
 
-   //Reading from file and filling vector
+   //Reading from file and filling map
    ReadFile(words, getFileName());
 
    //Display the word counts

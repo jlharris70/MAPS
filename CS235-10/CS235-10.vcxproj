@@ -126,6 +126,7 @@
     <ClCompile Include="wordCount.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="makefile" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>

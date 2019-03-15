@@ -13,6 +13,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <string>        // for STRING
+#include <cassert>
 
 namespace custom
 {
@@ -22,158 +23,177 @@ namespace custom
    template <class T>
    class BST
    {
+   public:
+      class iterator;
+      class reverse_iterator;
+      class cosntIterator;
+
+      /***************************************************************************
+      * BNode CLASS
+      ***************************************************************************/
+      class BNode
+      {
       public:
-            class iterator;
-            class reverse_iterator;
-            class cosntIterator;
+         //BNode public variables
+         T data;
+         BNode * pLeft;
+         BNode * pRight;
+         BNode * pParent;
+         bool isRed;
 
-            /***************************************************************************
-            * BNode CLASS
-            ***************************************************************************/
-            class BNode
-            {
-               public:
-                  //BNode public variables
-                  T data;
-                  BNode * pLeft;
-                  BNode * pRight;
-                  BNode * pParent;
-                  bool isRed;
+         //BNode constructors
+         BNode() :pLeft(NULL), pRight(NULL), pParent(NULL), data(), isRed() {}
+         BNode(const T & t) :pLeft(NULL), pRight(NULL), pParent(NULL),
+            data(t), isRed(false) {}
 
-                  //BNode constructors
-                  BNode() :pLeft(NULL), pRight(NULL), pParent(NULL), data(), isRed() {}
-                  BNode(const T & t) :pLeft(NULL), pRight(NULL), pParent(NULL),
-                                data(t), isRed(false) {}
-
-               private:
-                  //BNode private functions
-                  void verifyRB(int depth);
-                  void verify(BST);
-                  void balance();
-            };
-
-         //Constructors & Destructor
-         BST(): root(), numElements(0) {}
-         BST(BST <T> & rhs) throw (const char *) :
-               root(), numElements(0) {*this = rhs;} //TODO:
-         ~BST() {/*deleteBinaryTree();*/}
-
-         //standard container interfaces
-         BST<T> & operator = (const BST<T> & rhs)throw (const char *);
-         int size()  {return numElements;}
-         bool empty() {return root == NULL;}
-         void clear() { deleteBTree(root); numElements = 0; }
-
-         //edit tree
-         void insert(const T & t)  throw (const char *);
-         void erase(iterator & it);
-         BNode * getRoot() { return root; }
-
-         //Red Black
-         void redBlack(BNode* nodeToBalance)  throw (const char *);
-         bool leftNode(BNode* nodeToBalance)  throw (const char *);
-
-         //iterator functions
-         iterator find(const T & t);
-         iterator begin();
-         iterator end();
-         iterator rbegin();
-         iterator rend();
-
-         //constant iterator functions
-         cosntIterator cfind(T & t) const;
-         cosntIterator cbegin() const;
-         cosntIterator cend() const;
-         cosntIterator crbegin() const;
-         cosntIterator crend() const;
+         //Data Access
+         void setData(T data) { this->data = data; }
+         T& getData() { return data; }
 
       private:
-         //BST private variables
-         BNode * root;
-         int numElements;
-         bool redBlackBalance = false;
+         //BNode private functions
+         void verifyRB(int depth);
+         void verify(BST);
+         void balance();
+      };
 
-         //BST private functions
-         void deleteNode(BNode dlte, bool right);
-         void deleteBinaryTree(BNode dlte);
-         BNode* addSingleNode(BNode* parent, BNode* node);
-         //BNode * copyBinaryTree(BNode<T> * src, BNode<T> * dest){}
+      //Constructors & Destructor
+      BST() : root(), numElements(0) {}
+      BST(BST <T> & rhs) throw (const char *) :
+         root(), numElements(0) {
+         *this = rhs;
+      } //TODO:
+      ~BST()
+      {
 
-         /***************************************************************************
-         * BNODE :: TREE SIZE
-         ***************************************************************************/
-         int sizeBTree(const BNode * pRoot)
+      }
+
+      //standard container interfaces
+      BST<T> & operator = (const BST<T> & rhs)throw (const char *);
+      int size() { return numElements; }
+      bool empty() { return root == NULL; }
+      void clear()
+      {
+         if (root)
          {
-            int size = 1;
-            if (pRoot->pLeft)
-               size += sizeBTree(pRoot->pLeft);
-            if(pRoot->pRight)
-               size += sizeBTree(pRoot->pRight);
+            deleteBTree(root);
+         }
+         root = NULL;
+         numElements = 0;
+      }
 
-            return size;
+      //edit tree
+      void insert(const T & t)  throw (const char *);
+      void erase(iterator & it);
+      BNode * getRoot() { return root; }
+
+      //Red Black
+      void redBlack(BNode* nodeToBalance)  throw (const char *);
+      bool leftNode(BNode* nodeToBalance)  throw (const char *);
+
+      //iterator functions
+      iterator find(const T & t);
+      iterator begin();
+      iterator end();
+      iterator rbegin();
+      iterator rend();
+
+      //constant iterator functions
+      cosntIterator cfind(T & t) const;
+      cosntIterator cbegin() const;
+      cosntIterator cend() const;
+      cosntIterator crbegin() const;
+      cosntIterator crend() const;
+
+   private:
+      //BST private variables
+      BNode * root;
+      int numElements;
+      bool redBlackBalance = false;
+
+      //BST private functions
+      void deleteNode(BNode dlte, bool right);
+      void deleteBinaryTree(BNode dlte);
+      BNode* addSingleNode(BNode* parent, BNode* node);
+      //BNode * copyBinaryTree(BNode<T> * src, BNode<T> * dest){}
+
+      /***************************************************************************
+      * BNODE :: TREE SIZE
+      ***************************************************************************/
+      int sizeBTree(const BNode * pRoot)
+      {
+         int size = 1;
+         if (pRoot->pLeft)
+            size += sizeBTree(pRoot->pLeft);
+         if (pRoot->pRight)
+            size += sizeBTree(pRoot->pRight);
+
+         return size;
+      }
+
+      /***************************************************************************
+      * BNODE :: ADD LEFT
+      ***************************************************************************/
+      void addLeft(BNode * pNode, const T & t) throw (const char*)
+      {
+         try
+         {
+            BNode * pNew = new BNode(t);
+            pNew->pParent = pNode;
+            pNode->pLeft = pNew;
          }
 
-         /***************************************************************************
-         * BNODE :: ADD LEFT
-         ***************************************************************************/
-         void addLeft(BNode * pNode, const T & t) throw (const char*)
+         catch (std::bad_alloc)
          {
-            try
-            {
-               BNode * pNew = new BNode(t);
-               pNew->pParent = pNode;
-               pNode->pLeft = pNew;
-            }
-
-            catch(std::bad_alloc)
-            {
-               std::cout << "Unable to allocate a node" << std::endl;
-            }
+            std::cout << "Unable to allocate a node" << std::endl;
          }
+      }
 
-         /***************************************************************************
-         * BNODE :: ADD LEFT BNode
-         ***************************************************************************/
-         void addLeft(BNode * pNode, BNode * pAdd)
+      /***************************************************************************
+      * BNODE :: ADD LEFT BNode
+      ***************************************************************************/
+      void addLeft(BNode * pNode, BNode * pAdd)
+      {
+         if (pAdd)
+            pAdd->pParent = pNode;
+         pNode->pLeft = pAdd;
+      }
+
+      /***************************************************************************
+      * BNODE :: ADD RIGHT
+      ***************************************************************************/
+      void addRight(BNode * pNode, BNode * pAdd)
+      {
+         if (pAdd)
+            pAdd->pParent = pNode;
+         pNode->pRight = pAdd;
+      }
+
+      /***************************************************************************
+      * BNODE :: ADD RIGHT template as variable
+      ***************************************************************************/
+      void addRight(BNode * pNode, const T & t) throw (const char*)
+      {
+         try
          {
-            if (pAdd)
-               pAdd->pParent = pNode;
-            pNode->pLeft = pAdd;
+            BNode * pNew = new BNode(t);
+            pNew->pParent = pNode;
+            pNode->pRight = pNew;
          }
-
-         /***************************************************************************
-         * BNODE :: ADD RIGHT
-         ***************************************************************************/
-         void addRight(BNode * pNode, BNode * pAdd)
+         catch (std::bad_alloc)
          {
-            if (pAdd)
-               pAdd->pParent = pNode;
-            pNode->pRight = pAdd;
+            std::cout << "ERROR: Unable to allocate a node" << std::endl;
          }
+      }
 
-         /***************************************************************************
-         * BNODE :: ADD RIGHT template as variable
-         ***************************************************************************/
-         void addRight(BNode * pNode, const T & t) throw (const char*)
+      /***************************************************************************
+      * BNODE :: DELETE TREE
+      ***************************************************************************/
+      void deleteBTree(BNode * & pNode)
+      {
+         if (numElements > 0)
          {
-            try
-            {
-               BNode * pNew = new BNode(t);
-               pNew->pParent = pNode;
-               pNode->pRight = pNew;
-            }
-            catch (std::bad_alloc)
-            {
-               std::cout << "ERROR: Unable to allocate a node" << std::endl;
-            }
-         }
-
-         /***************************************************************************
-         * BNODE :: DELETE TREE
-         ***************************************************************************/
-         void deleteBTree(BNode * & pNode)
-         {
-            if(!pNode)
+            if (!pNode)
                return;
 
             if (pNode->pLeft)
@@ -182,49 +202,51 @@ namespace custom
             if (pNode->pRight)
                deleteBTree(pNode->pRight);
 
+            numElements--;
             pNode = NULL;
             delete pNode;
          }
+      }
 
-         /***************************************************************************
-         * BNODE :: EXTRACTION OPERATOR OVERLOAD
-         ***************************************************************************/
-         std::ostream & operator << (BNode * pHead)
-         {
-            //If node is null, exit
-            if (pHead == NULL)
-               return;
-            std::ostream  out;
-            //call extraction operator for pHead->pLeft
-            out << pHead->pLeft;
-            //once a null is reached output data for the node that called pLeft
-            out << pHead->data << " ";
-            //now check to see if there is a pRight node
-            out << pHead->pRight;
+      /***************************************************************************
+      * BNODE :: EXTRACTION OPERATOR OVERLOAD
+      ***************************************************************************/
+      std::ostream & operator << (BNode * pHead)
+      {
+         //If node is null, exit
+         if (pHead == NULL)
+            return;
+         std::ostream  out;
+         //call extraction operator for pHead->pLeft
+         out << pHead->pLeft;
+         //once a null is reached output data for the node that called pLeft
+         out << pHead->data << " ";
+         //now check to see if there is a pRight node
+         out << pHead->pRight;
 
-            return out;
-         }
+         return out;
+      }
 
-         /***************************************************************************
-         * BNODE :: COPY
-         ***************************************************************************/
-         BNode * copyBTree(const BNode * pHead)
-         {
-            if(pHead == NULL)
-               return NULL;
+      /***************************************************************************
+      * BNODE :: COPY
+      ***************************************************************************/
+      BNode * copyBTree(const BNode * pHead)
+      {
+         if (pHead == NULL)
+            return NULL;
 
-            BNode * pCopy = new BNode(pHead->data);
+         BNode * pCopy = new BNode(pHead->data);
 
-            pCopy->pLeft = copyBTree(pHead->pLeft);
-            if (pCopy->pLeft != NULL)
-               pCopy->pLeft->pParent = pCopy;
+         pCopy->pLeft = copyBTree(pHead->pLeft);
+         if (pCopy->pLeft != NULL)
+            pCopy->pLeft->pParent = pCopy;
 
-            pCopy->pRight = copyBTree(pHead->pRight);
-            if (pCopy->pRight != NULL)
-               pCopy->pRight->pParent = pCopy;
+         pCopy->pRight = copyBTree(pHead->pRight);
+         if (pCopy->pRight != NULL)
+            pCopy->pRight->pParent = pCopy;
 
-            return pCopy;
-         }
+         return pCopy;
+      }
    };
 
    /***************************************************************************
@@ -234,10 +256,10 @@ namespace custom
    template <class T>
    class BST<T> ::iterator
    {
-      private:
+   private:
       //typename BST<T>::BNode * p;
 
-      public:
+   public:
       BNode* p;
       //constructors
       iterator() : p(NULL) {}
@@ -252,12 +274,12 @@ namespace custom
       }
 
       //equal and not equal
-      bool operator == (const iterator & it)
+      bool operator == (const iterator & it) const
       {
          return it.p == p;
       }
 
-      bool operator != (const iterator & it)
+      bool operator != (const iterator & it) const
       {
          return it.p != p;
       }
@@ -435,10 +457,11 @@ namespace custom
       //dereference
       T operator * () throw (const char *)
       {
-         if (!p)
+         /*if (!p)
             return NULL;
          else
-            return p->data;
+            return p->data;*/
+         return p->data;
       }
    };
 
@@ -449,10 +472,10 @@ namespace custom
    template <class T>
    class BST<T> ::reverse_iterator
    {
-      private:
+   private:
       //typename BST<T>::BNode * p;
 
-      public:
+   public:
       BNode* p;
       //constructors
       reverse_iterator() : p(NULL) {}
@@ -587,64 +610,64 @@ namespace custom
    * An iterator through the tree
    ***************************************************************************/
    template <class T>
-   class BST<T> :: cosntIterator
+   class BST<T> ::cosntIterator
    {
-      private:
-         //typename BST<T>::BNode * p;
+   private:
+      //typename BST<T>::BNode * p;
 
-      public:
-         typename BST<T>::BNode * p;
-         //constructors
-         cosntIterator(): p(NULL){}
-         cosntIterator(const BNode * p): p(p) {}
-         cosntIterator(const cosntIterator & rhs): p(rhs.p){}
+   public:
+      typename BST<T>::BNode * p;
+      //constructors
+      cosntIterator() : p(NULL) {}
+      cosntIterator(const BNode * p) : p(p) {}
+      cosntIterator(const cosntIterator & rhs) : p(rhs.p) {}
 
-         //assignment
-         cosntIterator & operator = (const cosntIterator & it)
-         {
-            //stub
-         }
+      //assignment
+      cosntIterator & operator = (const cosntIterator & it)
+      {
+         //stub
+      }
 
-         //equal and not equal
-         bool operator == (const cosntIterator & it) const
-         {
-            return *this;
-         }
+      //equal and not equal
+      bool operator == (const cosntIterator & it) const
+      {
+         return *this;
+      }
 
-         bool operator != (const cosntIterator & it) const
-         {
-            return *this;
-         }
+      bool operator != (const cosntIterator & it) const
+      {
+         return *this;
+      }
 
-         //postfix increment
-         cosntIterator operator ++ ()
-         {
-            //stub
-         }
+      //postfix increment
+      cosntIterator operator ++ ()
+      {
+         //stub
+      }
 
-         //prefix increment
+      //prefix increment
 //         cosntIterator <T> operator ++ ()
 //         {
 //            //stub
 //         }
 
          //postfix decrement
-         cosntIterator operator -- ()
-         {
-            //stub
-         }
+      cosntIterator operator -- ()
+      {
+         //stub
+      }
 
-         //prefix decrement
+      //prefix decrement
 //         cosntIterator <T> operator -- ()
 //         {
 //            //stub
 //         }
 
          //dereference operator
-         T operator * () const throw (const char *)
-         {
-            //stub
-         }
+      T operator * () const throw (const char *)
+      {
+         //stub
+      }
    };
 
    /***************************************************************************
@@ -654,6 +677,7 @@ namespace custom
    template <class T>
    BST <T> & BST <T> :: operator = (const BST <T> & rhs) throw (const char *)
    {
+      clear();
       //Unless its an empty tree, we will need to copy the contents.
       if (rhs.root != NULL)
       {
@@ -668,15 +692,15 @@ namespace custom
       return *this;
    }
 
-/***************************************************************************
-* BST :: RedBlack
-* Checks Node is left or right branch.
-***************************************************************************/
+   /***************************************************************************
+   * BST :: RedBlack
+   * Checks Node is left or right branch.
+   ***************************************************************************/
 
    template <class T>
    bool BST <T> ::leftNode(BNode * nodeToCheck) throw(const char *)
    {
-      if (nodeToCheck->pParent != NULL ) //grandparent is black
+      if (nodeToCheck->pParent != NULL) //grandparent is black
       {
          //Check Left Branch
          if (nodeToCheck->pParent->pLeft == nodeToCheck) //left Branch
@@ -696,7 +720,7 @@ namespace custom
    * Checks Inserted node to balance the tree.
    ***************************************************************************/
    template <class T>
-   void BST <T> :: redBlack(BNode * nodeToBalance) throw(const char *)
+   void BST <T> ::redBlack(BNode * nodeToBalance) throw(const char *)
    {
       try
       {
@@ -711,7 +735,7 @@ namespace custom
          if ((nodeToBalance->pParent != NULL && //Parent & Grandparent isnot nothing
             nodeToBalance->pParent->pParent != NULL) &&
             (nodeToBalance->pParent->isRed == true && //Parent is red
-            nodeToBalance->pParent->pParent->isRed == false)) //grandparent is black
+               nodeToBalance->pParent->pParent->isRed == false)) //grandparent is black
          {
             //is node parent the left or right node of the grandparent
             if (nodeToBalance->pParent->pParent->pLeft == nodeToBalance->pParent) //Then check right for aunt
@@ -749,7 +773,7 @@ namespace custom
 
          //Check Four - Parent is red, grandparent is black
          // and Aunt is black or nonexistant
-         bool shift=false;
+         bool shift = false;
          if ((nodeToBalance->pParent != NULL && //Parent & Grandparent isnot nothing
             nodeToBalance->pParent->pParent != NULL) &&
             (nodeToBalance->pParent->isRed == true && //Parent is red
@@ -757,7 +781,7 @@ namespace custom
          {
 
             //Check Aunt to be black
-            if (leftNode(nodeToBalance->pParent)==true) //Then check right for aunt
+            if (leftNode(nodeToBalance->pParent) == true) //Then check right for aunt
             {
                //Make sure its not NULL
                if (nodeToBalance->pParent->pParent->pRight != NULL)
@@ -790,7 +814,7 @@ namespace custom
          {
 
             //4A - Left Node of Left Node
-            if (leftNode(nodeToBalance) == true && leftNode(nodeToBalance->pParent)==true)
+            if (leftNode(nodeToBalance) == true && leftNode(nodeToBalance->pParent) == true)
             {
                BNode * nodeGParent;
                BNode * nodeGGParent;
@@ -815,7 +839,7 @@ namespace custom
             }
 
             //4B - Right Node of Right Node
-            if (leftNode(nodeToBalance) == false && leftNode(nodeToBalance->pParent)==false)
+            if (leftNode(nodeToBalance) == false && leftNode(nodeToBalance->pParent) == false)
             {
                BNode * nodeGParent;
                BNode * nodeGGParent;
@@ -825,7 +849,7 @@ namespace custom
                nodeToBalance->pParent->isRed = false; //Set parent black
 
                //Rotate grandparent to left so its left node of parent
-               addLeft(nodeToBalance->pParent,nodeToBalance->pParent->pParent);
+               addLeft(nodeToBalance->pParent, nodeToBalance->pParent->pParent);
 
                //Clear out right node
                nodeToBalance->pParent->pParent->pRight = NULL;
@@ -924,12 +948,12 @@ namespace custom
    * Inserts a node from the tree in logarithmic time to size.
    ***************************************************************************/
    template <class T>
-   void BST <T> :: insert(const T & t) throw (const char *)
+   void BST <T> ::insert(const T & t) throw (const char *)
    {
       try
       {
          //if no node, create one
-         if(root == NULL)
+         if (root == NULL)
          {
             root = new typename BST<T>::BNode(t);
          }
@@ -958,7 +982,7 @@ namespace custom
                   nodeToCheck->pLeft->pParent = nodeToCheck;
                   std::string s;
                   s = typeid(nodeToCheck->data).name();
-                  if (s=="i")
+                  if (s == "i")
                      redBlack(nodeToCheck->pLeft);
                   toInsert = false;
                }
@@ -1004,7 +1028,7 @@ namespace custom
    * Erases a node from the tree in logarithmic time to size.
    ***************************************************************************/
    template <class T>
-   void BST <T> :: erase(iterator & it)
+   void BST <T> ::erase(iterator & it)
    {
       //Four cases, handle each individually
 
@@ -1264,6 +1288,23 @@ namespace custom
       }
 
       return returnValue;
+   }
+
+   /***************************************************************************
+   * BST INSERTION
+   * Inserts the contents of the BST into an out stream.
+   ***************************************************************************/
+   template <class T>
+   std::ostream & operator << (std::ostream & out,
+      const BST<T> & bst)
+   {
+      for (typename BST<T>::iterator i = bst.begin(); i != bst.end(); ++i)
+      {
+         out << i.p->data;
+         //out << " ";
+      }
+
+      return out;
    }
 }
 

@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="makefile" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="D_C_121.txt" />
