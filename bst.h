@@ -45,6 +45,10 @@ namespace custom
                   BNode(const T & t) :pLeft(NULL), pRight(NULL), pParent(NULL),
                                 data(t), isRed(false) {}
 
+                  //Data Access
+                  void setData(T data) { this->data = data; }
+                  T& getData() { return data; }
+
                private:
                   //BNode private functions
                   void verifyRB(int depth);
@@ -56,13 +60,24 @@ namespace custom
          BST(): root(), numElements(0) {}
          BST(BST <T> & rhs) throw (const char *) :
                root(), numElements(0) {*this = rhs;} //TODO:
-         ~BST() {deleteBTree(root);}
+         ~BST() 
+         {
+            
+         }
 
          //standard container interfaces
          BST<T> & operator = (const BST<T> & rhs)throw (const char *);
          int size()  {return numElements;}
          bool empty() {return root == NULL;}
-         void clear() { deleteBTree(root); numElements = 0; }
+         void clear()
+         {
+            if (root)
+            {
+               deleteBTree(root);
+            }
+            root = NULL;
+            numElements = 0;
+         }
 
          //edit tree
          void insert(const T & t)  throw (const char *);
@@ -173,17 +188,21 @@ namespace custom
          ***************************************************************************/
          void deleteBTree(BNode * & pNode)
          {
-            if(!pNode)
-               return;
+            if (numElements > 0)
+            {
+               if (!pNode)
+                  return;
 
-            if (pNode->pLeft)
-               deleteBTree(pNode->pLeft);
+               if (pNode->pLeft)
+                  deleteBTree(pNode->pLeft);
 
-            if (pNode->pRight)
-               deleteBTree(pNode->pRight);
+               if (pNode->pRight)
+                  deleteBTree(pNode->pRight);
 
-            pNode = NULL;
-            delete pNode;
+               numElements--;
+               pNode = NULL;
+               delete pNode;
+            }
          }
 
          /***************************************************************************
@@ -245,19 +264,19 @@ namespace custom
       iterator(const iterator & rhs) : p(rhs.p) {}
 
       //assignment
-      iterator & operator = (const iterator & it)
+      iterator & operator = (const iterator & it) 
       {
          this->p = it.p;
          return *this;
       }
 
       //equal and not equal
-      bool operator == (const iterator & it)
+      bool operator == (const iterator & it) const
       {
          return it.p == p;
       }
 
-      bool operator != (const iterator & it)
+      bool operator != (const iterator & it) const
       {
          return it.p != p;
       }
@@ -435,10 +454,11 @@ namespace custom
       //dereference
       T operator * () throw (const char *)
       {
-         if (!p)
+         /*if (!p)
             return NULL;
          else
-            return p->data;
+            return p->data;*/
+         return p->data;
       }
    };
 
