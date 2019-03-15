@@ -45,7 +45,12 @@ namespace custom
 
          //iterator functions
          class iterator;
-         iterator find(const K & k)       { return iterator(bst.find(k));}
+         iterator find(const K & k)
+         {
+            pair<K, V> keyPairToFind;
+            keyPairToFind.first = k;
+            return iterator(bst.find(keyPairToFind));
+         }
          iterator begin()                 { return iterator(bst.begin());}
          iterator end()                   { return iterator(bst.end());}
          iterator rbegin()                { return iterator(bst.rbegin());}
@@ -53,11 +58,16 @@ namespace custom
 
          //constant iterator functions
          class cosntIterator;
-         //cosntIterator cfind(K & k) const { return iterator(bst.cfind(k));}
-         //cosntIterator cbegin() const     { return iterator(bst.cbegin());}
-         //cosntIterator cend() const       { return iterator(bst.cend());}
-         //cosntIterator crbegin() const    { return iterator(bst.crbegin());}
-         //cosntIterator crend() const      { return iterator(bst.crend());}
+         cosntIterator cfind(const K & k) const
+         {
+            pair<K, V> keyPairToFind;
+            keyPairToFind.first = k;
+            return iterator(bst.cfind(keyPairToFind));
+         }
+         cosntIterator cbegin() const     { return iterator(bst.cbegin());}
+         cosntIterator cend() const       { return iterator(bst.cend());}
+         cosntIterator crbegin() const    { return iterator(bst.crbegin());}
+         cosntIterator crend() const      { return iterator(bst.crend());}
 
          //reverse iterator functions
          class reverse_iterator;
@@ -95,24 +105,33 @@ namespace custom
          //Inequality Operator
          bool operator != (const iterator & it) const
          {
-            return false;//return !(it.bstIterator == bstIterator);
+            return !(it.bstIterator == bstIterator);
          }
 
-         //Increment Operator (Postfix)
+         //Increment Operator (Prefix)
          iterator & operator ++ ()
          {
             //Test this!
             ++bstIterator;
             return *this;
+
+            /*//Test this!
+            iterator returnValue(this);
+            ++bstIterator;
+            return returnValue;*/
          }
 
          //Increment Operator (Postfix)
          iterator & operator ++ (int postfix)
          {
             //Test this!
+            ++bstIterator;
+            return *this;
+
+            /*//Test this!
             iterator returnValue(this);
             ++bstIterator;
-            return returnValue;
+            return returnValue;*/
          }
 
          //Decrement Operator (Prefix)
@@ -163,6 +182,15 @@ namespace custom
       pair<K, V>& pair = foundIt.bstIterator.p->getData();
 
       return pair.second;
+   }
+
+   template <class K, class V>
+   std::ostream & operator << (std::ostream & out,
+      const map<K, V> & map)
+   {
+      out << map.bst;
+
+      return out;
    }
 }
 

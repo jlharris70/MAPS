@@ -13,6 +13,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <string>        // for STRING
+#include <cassert>
 
 namespace custom
 {
@@ -1285,6 +1286,23 @@ namespace custom
       }
 
       return returnValue;
+   }
+
+   /***************************************************************************
+   * BST INSERTION
+   * Inserts the contents of the BST into an out stream.
+   ***************************************************************************/
+   template <class T>
+   std::ostream & operator << (std::ostream & out,
+      const BST<T> & bst)
+   {
+      for (typename BST<T>::iterator i = bst.begin(); i != bst.end(); ++i)
+      {
+         out << i.p->data;
+         //out << " ";
+      }
+
+      return out;
    }
 }
 
